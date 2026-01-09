@@ -1,0 +1,20 @@
+{
+  "gcn_config": {
+    "input_dim": 59,
+    "hidden_dim": 160,
+    "num_layers": 3,
+    "dropout": 0.47,
+    "learning_rate": 0.000213,
+    "weight_decay": 1.928e-06,
+    "batch_size": 4
+  },
+  "k_value": 30,
+  "embedder_type": "cvc",
+  "gcn_val_auc": 0.7560109289617486,
+  "xgb_val_auc": 0.7542349726775955,
+  "ensemble_val_auc": 0.760792349726776,
+  "meta_model_type": "logistic",
+  "train_size": 726,
+  "val_size": 182,
+  "random_state": 42
+}

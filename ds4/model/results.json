@@ -1,0 +1,21 @@
+{
+  "cv_auc_mean": 0.9998046875,
+  "cv_auc_std": 0.000390625,
+  "test_auc": 0.9896874999999999,
+  "feature_names": [
+    "k4_count",
+    "k4_abundance",
+    "k4_diversity",
+    "k5_count",
+    "k5_abundance",
+    "k5_diversity",
+    "k6_count",
+    "k6_abundance",
+    "k6_diversity",
+    "v_unique_count",
+    "j_unique_count",
+    "v_diversity",
+    "j_diversity"
+  ],
+  "feature_importances": 0.0
+}

@@ -1,0 +1,93 @@
+{
+  "best_configuration": {
+    "name": "Log-transform",
+    "config": "log_transform_polynomial_degree2_isotonic",
+    "test_auc": 0.9581250000000001
+  },
+  "seed_exploration": [
+    {
+      "seed": 42,
+      "test_auc": 0.8975
+    },
+    {
+      "seed": 43,
+      "test_auc": 0.9071875
+    },
+    {
+      "seed": 44,
+      "test_auc": 0.8628125000000001
+    },
+    {
+      "seed": 45,
+      "test_auc": 0.9546875
+    },
+    {
+      "seed": 46,
+      "test_auc": 0.9115625
+    },
+    {
+      "seed": 47,
+      "test_auc": 0.834375
+    },
+    {
+      "seed": 48,
+      "test_auc": 0.8990625000000001
+    },
+    {
+      "seed": 49,
+      "test_auc": 0.88625
+    },
+    {
+      "seed": 50,
+      "test_auc": 0.9153125
+    },
+    {
+      "seed": 51,
+      "test_auc": 0.8609374999999999
+    },
+    {
+      "seed": 52,
+      "test_auc": 0.9087500000000001
+    }
+  ],
+  "variation_results": [
+    {
+      "name": "Baseline (seed=42)",
+      "test_auc": 0.9546875
+    },
+    {
+      "name": "Log-transform",
+      "test_auc": 0.9581250000000001
+    },
+    {
+      "name": "Sqrt-transform",
+      "test_auc": 0.955
+    },
+    {
+      "name": "Ratio feature",
+      "test_auc": 0.956875
+    },
+    {
+      "name": "Weighted Ensemble",
+      "test_auc": 0.9562499999999999
+    },
+    {
+      "name": "K-Fold OOF",
+      "test_auc": 0.8831125
+    }
+  ],
+  "threshold_optimization": {
+    "default_threshold": 0.5,
+    "optimal_threshold": 0.4484247832606994,
+    "default_accuracy": 0.9,
+    "optimal_accuracy": 0.925
+  },
+  "metadata": {
+    "base_features": [
+      "Proinsulin_Diversity",
+      "GAD65_Diversity"
+    ],
+    "polynomial_degree": 2,
+    "calibration_method": "isotonic"
+  }
+}

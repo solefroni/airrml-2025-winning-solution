@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+*.pyc
+*.pyo
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+._*
+
+# Large files that might have been accidentally added
+*.pkl.bak
+*.model.bak
+*_backup.*
+
+# Docker build artifacts
+docker/winningApproach/
+docker/submission_package/
+
+# Temporary files
+*.tmp
+*.temp

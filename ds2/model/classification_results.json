@@ -1,0 +1,90 @@
+{
+  "cv_auc_mean": 0.8505859375,
+  "cv_auc_std": 0.03462048354456325,
+  "test_auc": 0.894375,
+  "n_features_total": 2219785,
+  "n_features_selected": 5000,
+  "selection_percentage": 0.22524703969078086,
+  "top_20_features": [
+    {
+      "feature": "A.K.L",
+      "importance": 0.020756471902132034
+    },
+    {
+      "feature": "P.I.S",
+      "importance": 0.016479691490530968
+    },
+    {
+      "feature": "AWML",
+      "importance": 0.015026155859231949
+    },
+    {
+      "feature": "GQVTH",
+      "importance": 0.014555792324244976
+    },
+    {
+      "feature": "GQNSF",
+      "importance": 0.013752327300608158
+    },
+    {
+      "feature": "WDFSG",
+      "importance": 0.01372617669403553
+    },
+    {
+      "feature": "DV.A",
+      "importance": 0.010545485652983189
+    },
+    {
+      "feature": "K.TQR",
+      "importance": 0.009723590686917305
+    },
+    {
+      "feature": "AKTF",
+      "importance": 0.009101622737944126
+    },
+    {
+      "feature": "FLSSD",
+      "importance": 0.009054920636117458
+    },
+    {
+      "feature": "SAAPY",
+      "importance": 0.008812332525849342
+    },
+    {
+      "feature": "KRELG",
+      "importance": 0.008561030961573124
+    },
+    {
+      "feature": "VLQGI",
+      "importance": 0.008140375837683678
+    },
+    {
+      "feature": "L.DCF",
+      "importance": 0.007821164093911648
+    },
+    {
+      "feature": "ARQDG",
+      "importance": 0.007730376441031694
+    },
+    {
+      "feature": "V.DID",
+      "importance": 0.007694929372519255
+    },
+    {
+      "feature": "RY.DQ",
+      "importance": 0.007668131031095982
+    },
+    {
+      "feature": "SQGEW",
+      "importance": 0.007644794415682554
+    },
+    {
+      "feature": "KN.TP",
+      "importance": 0.007341262884438038
+    },
+    {
+      "feature": "H.FM",
+      "importance": 0.0071228304877877235
+    }
+  ]
+}

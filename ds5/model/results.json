@@ -1,0 +1,81 @@
+{
+  "best_model": "LogisticRegression",
+  "best_params": {
+    "C": 0.1,
+    "penalty": "l1",
+    "solver": "liblinear"
+  },
+  "nested_cv_auc_mean": 0.67568359375,
+  "nested_cv_auc_std": 0.12928131102038837,
+  "grid_cv_auc_mean": 1.0,
+  "cv_auc_mean": 1.0,
+  "cv_auc_std": 0.0,
+  "test_auc": 1.0,
+  "n_features": 30,
+  "feature_names": [
+    "pattern3_count",
+    "pattern3_abundance",
+    "pattern3_diversity",
+    "pattern3_max_abundance",
+    "pattern3_mean_abundance",
+    "pattern3_ratio",
+    "pattern3_abundance_ratio",
+    "pattern4_count",
+    "pattern4_abundance",
+    "pattern4_diversity",
+    "pattern4_max_abundance",
+    "pattern4_mean_abundance",
+    "pattern4_ratio",
+    "pattern4_abundance_ratio",
+    "pattern5_count",
+    "pattern5_abundance",
+    "pattern5_diversity",
+    "pattern5_max_abundance",
+    "pattern5_mean_abundance",
+    "pattern5_ratio",
+    "pattern5_abundance_ratio",
+    "pattern_all_count",
+    "pattern_all_abundance",
+    "pattern_all_diversity",
+    "pattern3_to_4_ratio",
+    "pattern3_to_5_ratio",
+    "pattern4_to_5_ratio",
+    "pattern3_count_per_1k",
+    "pattern4_count_per_1k",
+    "pattern5_count_per_1k"
+  ],
+  "n_train": 320,
+  "n_test": 80,
+  "k_sizes": [
+    3,
+    4,
+    5
+  ],
+  "n_patterns_by_k": {
+    "k3": 4,
+    "k4": 102,
+    "k5": 131
+  },
+  "all_model_results": {
+    "LogisticRegression": {
+      "cv_auc_mean": 1.0,
+      "test_auc": 1.0
+    },
+    "RandomForest": {
+      "cv_auc_mean": 1.0,
+      "test_auc": 1.0
+    },
+    "GradientBoosting": {
+      "cv_auc_mean": 1.0,
+      "test_auc": 1.0
+    },
+    "XGBoost": {
+      "cv_auc_mean": 1.0,
+      "test_auc": 0.99875
+    },
+    "Ensemble": {
+      "cv_auc_mean": 1.0,
+      "test_auc": 1.0
+    }
+  }
+}
