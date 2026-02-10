@@ -106,6 +106,7 @@ Some models require external biological databases:
 - Gapped k-mer tokenization (k=4,5,6 with gaps)
 - Chi-squared feature selection (5,000 from 2.2M features)
 - XGBoost classifier
+- `train.py` included for reproducibility (dynamic gapped tokenizer → Chi-squared → XGBoost pipeline)
 
 ### DS3: Synthetic (SARS-CoV-2 based)
 - Counts TCRs matching Parse Bioscience SARS-CoV-2 sequences
