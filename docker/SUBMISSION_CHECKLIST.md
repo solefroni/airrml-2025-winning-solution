@@ -23,7 +23,7 @@
 
 ### 2. Kaggle Submission File ✓
 
-- [x] Located at: `/home/dsi/solefroni/AIRRML/submission/BEST_SUBMISSION_0.84003.csv`
+- [x] Located at: `/dsi/efroni-lab/sol/AIRRML_from_home/submission/BEST_SUBMISSION_0.84003.csv`
 - [ ] Verify scores match:
   - Public Score: 0.84003
   - Private Score: 0.69353
@@ -50,7 +50,7 @@
 
 ```bash
 # Test individual dataset predictors
-cd /home/dsi/solefroni/AIRRML/winningApproach/ds1/code
+cd /dsi/efroni-lab/sol/AIRRML_from_home/winningApproach/ds1/code
 python predict.py  # Should run without errors
 
 # Repeat for ds2-ds8
@@ -59,7 +59,7 @@ python predict.py  # Should run without errors
 ### Docker Testing
 
 ```bash
-cd /home/dsi/solefroni/AIRRML/dockers
+cd /dsi/efroni-lab/sol/AIRRML_from_home/dockers
 
 # 1. Build
 ./build_docker.sh
@@ -88,7 +88,7 @@ ls -la /tmp/output/
 ### Step 1: Initialize Repository
 
 ```bash
-cd /home/dsi/solefroni/AIRRML/
+cd /dsi/efroni-lab/sol/AIRRML_from_home/
 git init airrml-2025-submission
 cd airrml-2025-submission
 
@@ -148,7 +148,7 @@ Ensure repository includes:
 ### Step 1: Run Preparation Script
 
 ```bash
-cd /home/dsi/solefroni/AIRRML/dockers
+cd /dsi/efroni-lab/sol/AIRRML_from_home/dockers
 ./prepare_submission.sh
 ```
 
@@ -174,7 +174,7 @@ nano REPOSITORY_INFO.txt
 ### Step 3: Compress Package
 
 ```bash
-cd /home/dsi/solefroni/AIRRML/dockers
+cd /dsi/efroni-lab/sol/AIRRML_from_home/dockers
 tar -czf submission_package.tar.gz submission_package/
 
 # Check size
@@ -324,7 +324,7 @@ When you receive Phase 2 datasets (expected before end of January 2026):
 docker system prune -a
 
 # Rebuild from scratch
-cd /home/dsi/solefroni/AIRRML/dockers
+cd /dsi/efroni-lab/sol/AIRRML_from_home/dockers
 rm -rf winningApproach
 ./build_docker.sh
 ```
@@ -332,7 +332,7 @@ rm -rf winningApproach
 ### Tests fail
 ```bash
 # Check individual components
-cd /home/dsi/solefroni/AIRRML/winningApproach/ds1/code
+cd /dsi/efroni-lab/sol/AIRRML_from_home/winningApproach/ds1/code
 python -c "import sys; print(sys.path)"
 python -c "import numpy, pandas, sklearn, xgboost, torch; print('OK')"
 

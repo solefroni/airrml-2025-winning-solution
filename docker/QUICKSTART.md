@@ -7,7 +7,7 @@ This Docker container provides a uniform interface for running our winning solut
 ### Step 1: Build the Container
 
 ```bash
-cd /home/dsi/solefroni/AIRRML/dockers
+cd /dsi/efroni-lab/sol/AIRRML_from_home/dockers
 ./build_docker.sh
 ```
 
@@ -77,7 +77,7 @@ This creates a `submission_package/` directory containing:
 
 ```bash
 # Build
-cd /home/dsi/solefroni/AIRRML/dockers
+cd /dsi/efroni-lab/sol/AIRRML_from_home/dockers
 ./build_docker.sh
 
 # Test
@@ -94,7 +94,7 @@ tar -czf submission_package.tar.gz submission_package/
 ### Local Testing (without Docker)
 
 ```bash
-cd /home/dsi/solefroni/AIRRML/dockers
+cd /dsi/efroni-lab/sol/AIRRML_from_home/dockers
 python3 -m submission.main \
   --train_dir /path/to/train_dataset_1 \
   --test_dir /path/to/test_dataset_1_1 \
@@ -108,7 +108,7 @@ python3 -m submission.main \
 ### Build fails: "winningApproach directory not found"
 ```bash
 # Ensure you're in the dockers directory
-cd /home/dsi/solefroni/AIRRML/dockers
+cd /dsi/efroni-lab/sol/AIRRML_from_home/dockers
 # And that ../winningApproach exists
 ls -la ../winningApproach/
 ```

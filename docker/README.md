@@ -22,7 +22,7 @@ dockers/
 ### 1. Build the Docker Image
 
 ```bash
-cd /home/dsi/solefroni/AIRRML/dockers
+cd /dsi/efroni-lab/sol/AIRRML_from_home/dockers
 chmod +x build_docker.sh
 ./build_docker.sh
 ```

@@ -316,7 +316,7 @@ Likely using:
 **Problem**: "winningApproach directory not found"
 ```bash
 # Solution:
-cd /home/dsi/solefroni/AIRRML/dockers
+cd /dsi/efroni-lab/sol/AIRRML_from_home/dockers
 ls -la ../winningApproach  # Verify it exists
 ./build_docker.sh
 ```
