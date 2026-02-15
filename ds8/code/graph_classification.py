@@ -36,8 +36,6 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 from cvc_embedder import CVCEmbedder
 from tcrformer_embedder import TCRformerEmbedder
-from tcremp_embedder import TCRemPEmbedder
-from tcrdist3_embedder import TCRdist3Embedder
 from graph_builder import GraphBuilder
 from cache_utils import (
     load_cached_embeddings, save_cached_embeddings,
@@ -80,7 +78,7 @@ if not torch.cuda.is_available():
     raise RuntimeError("CUDA is required but not available. Please run on a GPU node.")
 DEVICE = torch.device('cuda')
 
-# Embedder selection: 'cvc', 'tcrformer', 'tcremp', or 'tcrdist3'
+# Embedder selection: 'cvc' or 'tcrformer'
 EMBEDDER_TYPE = 'cvc'  # Use CVC for DS8 best model (GCN k=30)
 
 
@@ -389,16 +387,7 @@ def build_graph_dataset(sample_ids, metadata_df, cache_dir, graph_builder, k_val
         # First, check cache for each sample individually
         from cache_utils import load_cached_embeddings
         
-        # Add embedder-specific parameters for TCRdist3
         embedder_params = None
-        if EMBEDDER_TYPE == 'tcrdist3' and hasattr(graph_builder.embedder, 'n_references'):
-            embedder_params = {
-                'embedder': 'tcrdist3',
-                'n_references': graph_builder.embedder.n_references,
-                'organism': graph_builder.embedder.organism,
-                'chain': '_'.join(graph_builder.embedder.chain) if isinstance(graph_builder.embedder.chain, list) else graph_builder.embedder.chain
-            }
-        
         cached_embeddings_dict = {}  # rep_id -> embeddings
         samples_to_embed = []
         
@@ -421,14 +410,7 @@ def build_graph_dataset(sample_ids, metadata_df, cache_dir, graph_builder, k_val
             log_progress(f"  Need to compute embeddings for {len(samples_to_embed)} samples")
         
         # INCREMENTAL CACHING: Process samples in smaller batches and save after each batch
-        # This prevents losing all progress if the job fails partway through
-        # For TCRdist3, use smaller batches (10 samples) due to memory constraints
-        # For other embedders, use larger batches for better GPU utilization
-        # Increased from 50 to 100 for CVC to reduce overhead and improve throughput
-        if EMBEDDER_TYPE == 'tcrdist3':
-            sample_batch_size = 10  # Smaller batches for TCRdist3 to save progress more frequently
-        else:
-            sample_batch_size = 100  # Increased from 50 to 100 for better GPU utilization
+        sample_batch_size = 100
         
         embedding_compute_start = time.time()
         all_computed_embeddings = {}  # rep_id -> embeddings (for samples we compute)
@@ -521,17 +503,7 @@ def build_graph_dataset(sample_ids, metadata_df, cache_dir, graph_builder, k_val
                     if data['v_genes'] is not None and data['j_genes'] is not None:
                         cache_key = (data['sequences'], tuple(data['v_genes']), tuple(data['j_genes']))
                     
-                    # Add embedder-specific parameters
-                    embedder_params = None
-                    if EMBEDDER_TYPE == 'tcrdist3' and hasattr(graph_builder.embedder, 'n_references'):
-                        embedder_params = {
-                            'embedder': 'tcrdist3',
-                            'n_references': graph_builder.embedder.n_references,
-                            'organism': graph_builder.embedder.organism,
-                            'chain': '_'.join(graph_builder.embedder.chain) if isinstance(graph_builder.embedder.chain, list) else graph_builder.embedder.chain
-                        }
-                    
-                    save_cached_embeddings(cache_key, sample_embeddings, embedder_params)
+                    save_cached_embeddings(cache_key, sample_embeddings, None)
                 
                 log_progress(f"    ✓ Saved {len(batch_samples)} samples to cache")
         
@@ -863,48 +835,6 @@ def main():
                 verbose=True
             )
             log_progress(f"TCRformer Embedder: batch_size={batch_size}, FP16={use_fp16}, max_len=40")
-        elif EMBEDDER_TYPE == 'tcremp':
-            # Use SLURM_CPUS_PER_TASK if available, otherwise use most CPUs (leave 2 for system)
-            import os
-            slurm_cpus = os.environ.get('SLURM_CPUS_PER_TASK')
-            if slurm_cpus:
-                nproc = max(1, int(slurm_cpus) - 2)  # Leave 2 CPUs for system overhead
-            else:
-                import multiprocessing
-                nproc = max(1, multiprocessing.cpu_count() - 2)  # Leave 2 CPUs for system overhead
-            
-            embedder = TCRemPEmbedder(
-                device=DEVICE,  # Not used by TCRemP but kept for API compatibility
-                batch_size=batch_size,  # Not used by TCRemP but kept for API compatibility
-                use_fp16=use_fp16,  # Not used by TCRemP but kept for API compatibility
-                verbose=True,
-                n_prototypes=3000,  # Number of prototypes (default)
-                species='HomoSapiens',
-                chain='TRB',  # Use TRB chain for beta TCRs
-                nproc=nproc  # Number of processes for distance computation (auto-detect from SLURM)
-            )
-            log_progress(f"TCRemP Embedder: n_prototypes=3000, species=HomoSapiens, chain=TRB, nproc={nproc}")
-        elif EMBEDDER_TYPE == 'tcrdist3':
-            # Use SLURM_CPUS_PER_TASK if available, otherwise use most CPUs (leave 2 for system)
-            import os
-            slurm_cpus = os.environ.get('SLURM_CPUS_PER_TASK')
-            if slurm_cpus:
-                n_cpus = max(1, int(slurm_cpus) - 2)  # Leave 2 CPUs for system overhead
-            else:
-                import multiprocessing
-                n_cpus = max(1, multiprocessing.cpu_count() - 2)  # Leave 2 CPUs for system overhead
-            
-            embedder = TCRdist3Embedder(
-                device=DEVICE,  # Not used by TCRdist3 but kept for API compatibility
-                batch_size=batch_size,  # Not used by TCRdist3 but kept for API compatibility
-                use_fp16=use_fp16,  # Not used by TCRdist3 but kept for API compatibility
-                verbose=True,
-                n_references=1000,  # Number of reference TCRs for distance computation
-                organism='human',
-                chain='beta',  # Use beta chain for TRB TCRs
-                cpus=n_cpus  # Number of CPUs for distance computation
-            )
-            log_progress(f"TCRdist3 Embedder: n_references=1000, organism=human, chain=beta, cpus={n_cpus}")
         else:
             embedder = CVCEmbedder(
                 device=DEVICE, 
@@ -917,12 +847,6 @@ def main():
         log_progress(f"ERROR: Could not initialize {EMBEDDER_TYPE} embedder: {e}", "ERROR")
         if EMBEDDER_TYPE == 'tcrformer':
             log_progress("Please ensure TCRformer model is available. See https://github.com/InduKhatri/tcrformer", "ERROR")
-        elif EMBEDDER_TYPE == 'tcremp':
-            log_progress("Please ensure TCRemP is available. See https://github.com/antigenomics/tcremp", "ERROR")
-            log_progress("Note: TCRemP requires Python 3.11+ and mirpy package", "ERROR")
-        elif EMBEDDER_TYPE == 'tcrdist3':
-            log_progress("Please ensure TCRdist3 is available. See https://github.com/kmayerb/tcrdist3", "ERROR")
-            log_progress("Install with: pip install tcrdist3", "ERROR")
         else:
             log_progress("Please ensure CVC is installed from https://github.com/RomiGoldner/CVC", "ERROR")
         return

@@ -164,17 +164,7 @@ class GraphBuilder:
                 # Include V/J genes in cache key for TCRformer
                 cache_key = (sequences, tuple(v_genes), tuple(j_genes))
             
-            # Add embedder-specific parameters for TCRdist3
-            embedder_params = None
-            if hasattr(self.embedder, 'n_references'):  # TCRdist3 embedder
-                embedder_params = {
-                    'embedder': 'tcrdist3',
-                    'n_references': self.embedder.n_references,
-                    'organism': self.embedder.organism,
-                    'chain': '_'.join(self.embedder.chain) if isinstance(self.embedder.chain, list) else self.embedder.chain
-                }
-            
-            embeddings = load_cached_embeddings(cache_key, embedder_params)
+            embeddings = load_cached_embeddings(cache_key, None)
         
         if embeddings is None:
             if self.verbose:
@@ -196,17 +186,7 @@ class GraphBuilder:
                 if v_genes is not None and j_genes is not None:
                     cache_key = (sequences, tuple(v_genes), tuple(j_genes))
                 
-                # Add embedder-specific parameters for TCRdist3
-                embedder_params = None
-                if hasattr(self.embedder, 'n_references'):  # TCRdist3 embedder
-                    embedder_params = {
-                        'embedder': 'tcrdist3',
-                        'n_references': self.embedder.n_references,
-                        'organism': self.embedder.organism,
-                        'chain': '_'.join(self.embedder.chain) if isinstance(self.embedder.chain, list) else self.embedder.chain
-                    }
-                
-                save_cached_embeddings(cache_key, embeddings, embedder_params)
+                save_cached_embeddings(cache_key, embeddings, None)
         else:
             if self.verbose:
                 print(f"  Using cached embeddings for {len(sequences)} sequences")
