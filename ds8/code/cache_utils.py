@@ -77,7 +77,7 @@ def get_graph_cache_key(rep_id: str, k_value: int, sequences: List[str], embedde
         rep_id: Repertoire ID
         k_value: K value for KNN
         sequences: List of sequences
-        embedder_type: Type of embedder ('cvc' or 'tcrformer')
+        embedder_type: Type of embedder ('cvc' only)
     """
     seq_hash = get_sequence_hash(sequences)
     return f"{rep_id}_k{k_value}_{embedder_type}_{seq_hash}"
@@ -165,7 +165,7 @@ def load_cached_graph(rep_id: str, k_value: int, sequences: List[str], embedder_
         rep_id: Repertoire ID
         k_value: K value for KNN
         sequences: List of sequences
-        embedder_type: Type of embedder ('cvc' or 'tcrformer')
+        embedder_type: Type of embedder ('cvc' only)
     """
     import torch
     from torch_geometric.data import Data
@@ -214,7 +214,7 @@ def save_cached_graph(rep_id: str, k_value: int, sequences: List[str], graph, em
         k_value: K value for KNN
         sequences: List of sequences
         graph: Graph to cache
-        embedder_type: Type of embedder ('cvc' or 'tcrformer')
+        embedder_type: Type of embedder ('cvc' only)
     """
     import torch
     from torch_geometric.data import Data

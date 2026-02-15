@@ -35,7 +35,6 @@ warnings.filterwarnings('ignore')
 sys.path.insert(0, str(Path(__file__).parent))
 
 from cvc_embedder import CVCEmbedder
-from tcrformer_embedder import TCRformerEmbedder
 from graph_builder import GraphBuilder
 from cache_utils import (
     load_cached_embeddings, save_cached_embeddings,
@@ -78,8 +77,8 @@ if not torch.cuda.is_available():
     raise RuntimeError("CUDA is required but not available. Please run on a GPU node.")
 DEVICE = torch.device('cuda')
 
-# Embedder selection: 'cvc' or 'tcrformer'
-EMBEDDER_TYPE = 'cvc'  # Use CVC for DS8 best model (GCN k=30)
+# CVC only for DS8 (GCN k=30)
+EMBEDDER_TYPE = 'cvc'
 
 
 def log_progress(message, level="INFO"):
@@ -353,7 +352,7 @@ def build_graph_dataset(sample_ids, metadata_df, cache_dir, graph_builder, k_val
         sequences = df['junction_aa'].values.tolist()
         counts = df['templates'].values.astype(np.float32)
         
-        # Get V/J genes if available (for TCRformer)
+        # Get V/J genes if available
         v_genes = None
         j_genes = None
         if 'v_call' in df.columns and 'j_call' in df.columns:
@@ -817,38 +816,21 @@ def main():
     log_progress(f"Train: {len(train_ids)} samples ({y_train.sum()} positive)")
     log_progress(f"Val: {len(val_ids)} samples ({y_val.sum()} positive)")
     
-    # Initialize embedder based on configuration
-    log_progress(f"Initializing {EMBEDDER_TYPE} embedder...")
+    # Initialize CVC embedder only
+    log_progress("Initializing CVC embedder...")
     try:
-        # Use larger batch size and FP16 for faster inference on GPU
-        # Increased batch size for H200 GPU to better utilize GPU memory
-        # Further increased to 16384 for better GPU utilization (H200 has 141GB memory)
         batch_size = 16384 if DEVICE.type == 'cuda' else 256
         use_fp16 = DEVICE.type == 'cuda'
-        
-        if EMBEDDER_TYPE == 'tcrformer':
-            embedder = TCRformerEmbedder(
-                device=DEVICE, 
-                batch_size=batch_size,
-                max_len=40,  # TCRformer uses max_len=40
-                use_fp16=use_fp16,
-                verbose=True
-            )
-            log_progress(f"TCRformer Embedder: batch_size={batch_size}, FP16={use_fp16}, max_len=40")
-        else:
-            embedder = CVCEmbedder(
-                device=DEVICE, 
-                batch_size=batch_size,
-                use_fp16=use_fp16,
-                verbose=True
-            )
-            log_progress(f"CVC Embedder: batch_size={batch_size}, FP16={use_fp16}")
+        embedder = CVCEmbedder(
+            device=DEVICE,
+            batch_size=batch_size,
+            use_fp16=use_fp16,
+            verbose=True
+        )
+        log_progress(f"CVC Embedder: batch_size={batch_size}, FP16={use_fp16}")
     except Exception as e:
-        log_progress(f"ERROR: Could not initialize {EMBEDDER_TYPE} embedder: {e}", "ERROR")
-        if EMBEDDER_TYPE == 'tcrformer':
-            log_progress("Please ensure TCRformer model is available. See https://github.com/InduKhatri/tcrformer", "ERROR")
-        else:
-            log_progress("Please ensure CVC is installed from https://github.com/RomiGoldner/CVC", "ERROR")
+        log_progress(f"ERROR: Could not initialize CVC embedder: {e}", "ERROR")
+        log_progress("Please ensure CVC is installed from https://github.com/RomiGoldner/CVC", "ERROR")
         return
     
     # Results storage

@@ -8,6 +8,6 @@ All code files present as of the latest submission update.
 | **DS4** | `train.py`, `predict.py`, `rank_sequences.py` |
 | **DS5** | `train.py`, `predict.py` |
 | **DS7** | `train.py`, `predict.py` |
-| **DS8** | `cache_utils.py`, `cvc_embedder.py`, `downsample_samples.py`, `downsample_test.py`, `ensemble_predictor.py`, `extract_repertoire_features.py`, `generate_ranked_sequences_only.py`, `graph_builder.py`, `graph_classification.py`, `predict.py`, `tcrformer_embedder.py`, `train_gcn_best_params.py` |
+| **DS8** | `cache_utils.py`, `cvc_embedder.py`, `downsample_samples.py`, `downsample_test.py`, `ensemble_predictor.py`, `extract_repertoire_features.py`, `generate_ranked_sequences_only.py`, `graph_builder.py`, `graph_classification.py`, `predict.py`, `train_gcn_best_params.py` |
 
-DS8 uses CVC only for the submitted model (`embedder_type: "cvc"` in `ds8/model/ensemble_config.json`). `tcrformer_embedder.py` is included as requested by the organizers; the winning solution does not use TCRemP or TCRdist3.
+DS8 uses CVC only (`embedder_type: "cvc"` in `ds8/model/ensemble_config.json`). No other embedders (TCRformer, TCRemP, TCRdist3) are used or included.
