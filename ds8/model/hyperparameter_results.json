@@ -1,0 +1,12 @@
+{
+  "best_params": {
+    "input_dim": 59,
+    "hidden_dim": 160,
+    "num_layers": 3,
+    "dropout": 0.47,
+    "learning_rate": 0.000213,
+    "weight_decay": 0.000001928,
+    "batch_size": 4
+  },
+  "best_value": 0.7560109289617486
+}
