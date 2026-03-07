@@ -24,9 +24,8 @@ from sklearn.metrics import roc_auc_score, accuracy_score, balanced_accuracy_sco
 import warnings
 warnings.filterwarnings('ignore')
 
-# Add paths for imports
-sys.path.insert(0, str(Path(__file__).parent.parent.parent / "samplegraphsT1D" / "scripts"))
-sys.path.insert(0, str(Path(__file__).parent.parent / "simple"))
+# Add current directory for local imports
+sys.path.insert(0, str(Path(__file__).parent))
 
 from cvc_embedder import CVCEmbedder
 from graph_builder import GraphBuilder

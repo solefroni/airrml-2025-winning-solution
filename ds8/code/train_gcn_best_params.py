@@ -19,8 +19,8 @@ import pickle
 import torch.nn.functional as F
 import torch.nn as nn
 
-# Add paths
-sys.path.insert(0, str(Path(__file__).parent.parent.parent / "samplegraphsT1D" / "scripts"))
+# Add current directory for local imports
+sys.path.insert(0, str(Path(__file__).parent))
 
 from ensemble_predictor import GCNClassifier
 from cvc_embedder import CVCEmbedder
