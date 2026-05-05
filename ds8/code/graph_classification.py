@@ -335,6 +335,7 @@ def build_graph_dataset(sample_ids, metadata_df, cache_dir, graph_builder, k_val
     
     graphs = []
     labels = []
+    successful_ids = []  # rep_ids whose graphs were actually appended (in order)
     cached_count = 0
     new_count = 0
     
@@ -364,6 +365,7 @@ def build_graph_dataset(sample_ids, metadata_df, cache_dir, graph_builder, k_val
         
         if cached_graph is not None:
             graphs.append(cached_graph)
+            successful_ids.append(rep_id)
             cached_count += 1
         else:
             # Store for batch processing
@@ -539,6 +541,7 @@ def build_graph_dataset(sample_ids, metadata_df, cache_dir, graph_builder, k_val
                 # Save to cache IMMEDIATELY (incremental caching for job recovery)
                 save_cached_graph(rep_id, k_value, data['sequences'], graph, embedder_type=EMBEDDER_TYPE)
                 graphs.append(graph)
+                successful_ids.append(rep_id)
                 new_count += 1
                 # Log every 10 graphs to show progress
                 if new_count % 10 == 0:
@@ -555,7 +558,10 @@ def build_graph_dataset(sample_ids, metadata_df, cache_dir, graph_builder, k_val
     
     phase_time = time.time() - phase_start
     log_progress(f"Built {len(graphs)} graphs (cached: {cached_count}, new: {new_count}) in {phase_time:.1f} seconds ({phase_time/60:.2f} minutes)")
-    return graphs, np.array(labels)
+    if len(successful_ids) < len(sample_ids):
+        n_failed = len(sample_ids) - len(successful_ids)
+        log_progress(f"  NOTE: {n_failed} sample(s) failed graph build and were skipped", "WARN")
+    return graphs, np.array(labels), successful_ids
 
 
 def train_model(model, train_loader, val_loader, device, num_epochs, patience):
@@ -856,8 +862,8 @@ def main():
         
         # Build graphs (only train and val, no test)
         graph_build_start = time.time()
-        train_graphs, train_labels = build_graph_dataset(train_ids, metadata_df, DOWNSAMPLE_CACHE_DIR, graph_builder, k)
-        val_graphs, val_labels = build_graph_dataset(val_ids, metadata_df, DOWNSAMPLE_CACHE_DIR, graph_builder, k)
+        train_graphs, train_labels, _ = build_graph_dataset(train_ids, metadata_df, DOWNSAMPLE_CACHE_DIR, graph_builder, k)
+        val_graphs, val_labels, _ = build_graph_dataset(val_ids, metadata_df, DOWNSAMPLE_CACHE_DIR, graph_builder, k)
         graph_build_total = time.time() - graph_build_start
         log_progress(f"Total graph building for k={k}: {graph_build_total:.1f} seconds ({graph_build_total/60:.2f} minutes)")
         

@@ -139,15 +139,20 @@ for test_dataset_name, test_cache_dir in TEST_DATASETS:
     
     # Build graphs
     print(f"  Building graphs...")
-    test_graphs, _ = gc_module.build_graph_dataset(
+    test_graphs, _, graph_ok_ids = gc_module.build_graph_dataset(
         sample_ids, fake_metadata, test_cache_dir, graph_builder, K_VALUE
     )
-    
+
     print(f"  Built: {len(test_graphs)} graphs")
-    
-    # Create graph loader
+    failed_graph_ids = [s for s in sample_ids if s not in set(graph_ok_ids)]
+    if failed_graph_ids:
+        print(f"  WARNING: {len(failed_graph_ids)} sample(s) failed graph build, "
+              f"will fall back to XGBoost-only for them: {failed_graph_ids[:5]}"
+              f"{' ...' if len(failed_graph_ids) > 5 else ''}")
+
+    # Create graph loader (contains only successful graphs, in graph_ok_ids order)
     test_loader = DataLoader(test_graphs, batch_size=32, shuffle=False)
-    
+
     # Extract features for XGBoost
     print(f"  Extracting features for XGBoost...")
     all_features = []
@@ -155,45 +160,78 @@ for test_dataset_name, test_cache_dir in TEST_DATASETS:
         cache_file = test_cache_dir / f"{sample_id}.pkl"
         if not cache_file.exists():
             continue
-        
+
         try:
             with open(cache_file, 'rb') as f:
                 df = pickle.load(f)
-            
+
             features = extract_all_features(df)
             features['repertoire_id'] = sample_id
             all_features.append(features)
         except Exception as e:
             print(f"    WARNING: Failed to extract features for {sample_id}: {e}")
             continue
-    
+
     # Create features DataFrame
     features_df = pd.DataFrame(all_features)
     features_df.set_index('repertoire_id', inplace=True)
     features_df = features_df.fillna(0)
-    
+
     print(f"  Extracted: {len(features_df)} feature sets")
-    
-    # Get ensemble predictions
-    print(f"  Getting ensemble predictions...")
-    predictions = ensemble.predict_ensemble(
-        graph_loader=test_loader,
-        features_df=features_df
-    )
-    
-    # Store predictions
-    for i, sample_id in enumerate(sample_ids):
-        if i < len(predictions):
-            all_test_predictions.append({
-                'ID': sample_id,
-                'dataset': test_dataset_name,
-                'label_positive_probability': predictions[i],
-                'junction_aa': -999.0,
-                'v_call': -999.0,
-                'j_call': -999.0
-            })
-    
-    print(f"  ✓ Completed {test_dataset_name}: {len(predictions)} predictions")
+
+    # Align features_df to graph_ok_ids so GCN[i] and XGB[i] correspond to the
+    # same sample. Samples present in graphs but missing from features (rare)
+    # also get dropped from the ensemble path.
+    ensemble_ids = [s for s in graph_ok_ids if s in features_df.index]
+    dropped_from_ensemble = [s for s in graph_ok_ids if s not in features_df.index]
+    if dropped_from_ensemble:
+        # These have a graph but no features; rebuild loader without them.
+        keep_idx = [i for i, s in enumerate(graph_ok_ids) if s in features_df.index]
+        test_graphs = [test_graphs[i] for i in keep_idx]
+        test_loader = DataLoader(test_graphs, batch_size=32, shuffle=False)
+        print(f"  WARNING: {len(dropped_from_ensemble)} sample(s) had graphs but no "
+              f"XGBoost features; dropped from ensemble path")
+    ensemble_features_df = features_df.loc[ensemble_ids]
+
+    sample_predictions = {}  # sample_id -> probability
+
+    # Ensemble predictions for samples with both a graph and features
+    if len(ensemble_ids) > 0:
+        print(f"  Getting ensemble predictions for {len(ensemble_ids)} samples...")
+        predictions = ensemble.predict_ensemble(
+            graph_loader=test_loader,
+            features_df=ensemble_features_df
+        )
+        for sid, prob in zip(ensemble_ids, predictions):
+            sample_predictions[sid] = float(prob)
+
+    # XGBoost-only fallback for samples whose graph build failed
+    xgb_only_ids = [s for s in failed_graph_ids if s in features_df.index]
+    if xgb_only_ids:
+        print(f"  XGBoost-only fallback for {len(xgb_only_ids)} sample(s)...")
+        xgb_only_probs = ensemble.predict_xgb(features_df.loc[xgb_only_ids])
+        for sid, prob in zip(xgb_only_ids, xgb_only_probs):
+            sample_predictions[sid] = float(prob)
+
+    # Store predictions, preserving the original sample order. Samples for
+    # which neither pipeline produced a prediction are skipped with a warning.
+    n_written = 0
+    for sample_id in sample_ids:
+        if sample_id not in sample_predictions:
+            print(f"    WARNING: no prediction produced for {sample_id}, skipping")
+            continue
+        all_test_predictions.append({
+            'ID': sample_id,
+            'dataset': test_dataset_name,
+            'label_positive_probability': sample_predictions[sample_id],
+            'junction_aa': -999.0,
+            'v_call': -999.0,
+            'j_call': -999.0
+        })
+        n_written += 1
+
+    print(f"  ✓ Completed {test_dataset_name}: {n_written} predictions "
+          f"(ensemble: {len(ensemble_ids)}, xgb-only: {len(xgb_only_ids)})")
 
 print(f"\n{'='*70}")
 print(f"TOTAL TEST PREDICTIONS: {len(all_test_predictions)}")

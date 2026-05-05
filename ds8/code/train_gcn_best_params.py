@@ -107,13 +107,13 @@ graph_builder = GraphBuilder(embedder=embedder, k_neighbors=K_VALUE, device=str(
 
 # Build graphs
 print(f"Building {len(train_ids)} training graphs...")
-train_graphs, train_labels = gc_module.build_graph_dataset(
+train_graphs, train_labels, _ = gc_module.build_graph_dataset(
     train_ids, metadata, DOWNSAMPLE_CACHE_DIR, graph_builder, K_VALUE
 )
 print(f"Built: {len(train_graphs)} training graphs")
 
 print(f"\nBuilding {len(val_ids)} validation graphs...")
-val_graphs, val_labels = gc_module.build_graph_dataset(
+val_graphs, val_labels, _ = gc_module.build_graph_dataset(
     val_ids, metadata, DOWNSAMPLE_CACHE_DIR, graph_builder, K_VALUE
 )
 print(f"Built: {len(val_graphs)} validation graphs")
