@@ -1,4 +1,4 @@
-# AIRR-ML 2025 — Method Descriptions (Team solefroni, Rank-1)
+# AIRR-ML 2025 — Method Descriptions (Team gordianknot, Rank-1)
 
 **Author:** Sol Efroni, Faculty of Life Sciences, Bar-Ilan University, Ramat-Gan, Israel  
 **Repository:** https://github.com/solefroni/airrml-2025-winning-solution  
