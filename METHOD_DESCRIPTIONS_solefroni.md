@@ -3,7 +3,7 @@
 **Author:** Sol Efroni, Faculty of Life Sciences, Bar-Ilan University, Ramat-Gan, Israel  
 **Repository:** https://github.com/solefroni/airrml-2025-winning-solution  
 
-This document describes each dataset-specific method submitted for Phase 2, following the organizers' requested format (~200 words per method): training data and preprocessing, model training and hyperparameters, prediction probabilities, and top-50k sequence ranking.
+This document describes each dataset-specific method submitted for Phase 2, following the organizers' requested format (~200 words per method): training data and preprocessing, model training and hyperparameters, prediction probabilities, and top-50k sequence ranking. Descriptions match the current `main` branch of the submission repository (including the DS8 inference-time XGBoost-only fallback for samples whose graph build fails).
 
 ---
 
@@ -51,7 +51,7 @@ For DS7, training used repertoire-level features only: 600 binary indicators for
 
 ## R1-M4: DS8 (T1D, real-world)
 
-For DS8, repertoires were preprocessed by downsampling to 10,000 templates per repertoire (multinomial sampling proportional to template counts, seed 42). Two models were combined: (1) a Graph Convolutional Network on CVC-embedded KNN graphs (k = 30; node features: frequency, length, amino acid composition, centrality, CVC embedding slice; GCN: 3 layers, hidden dim 160, dropout 0.47; hyperparameters from Optuna on validation AUC); (2) XGBoost on approximately 200 repertoire-level features (k-mers, V/J usage, diversity, length, optional antigen counts). A logistic regression meta-learner stacked GCN and XGBoost validation predictions (out-of-fold for training the meta-model). Test probabilities are meta-learner positive-class scores. Top 50,000 training sequences were ranked by log2 fold-change of template-weighted abundance in positive vs. negative training repertoires. Only the CVC embedder was used in the final winning pipeline (not TCRformer or other embedders).
+For DS8, repertoires were preprocessed by downsampling to 10,000 templates per repertoire (multinomial sampling proportional to template counts, seed 42). Two models were combined: (1) a Graph Convolutional Network on CVC-embedded KNN graphs (k = 30; node features: frequency, length, amino acid composition, centrality, CVC embedding slice; GCN: 3 layers, hidden dim 160, dropout 0.47; hyperparameters from Optuna on validation AUC); (2) XGBoost on approximately 200 repertoire-level features (k-mers, V/J usage, diversity, length, optional antigen counts). A logistic regression meta-learner stacked GCN and XGBoost validation predictions (out-of-fold for training the meta-model). At inference, repertoire probabilities are meta-learner positive-class scores when both graph and feature extraction succeed; if graph construction fails for a sample, the pipeline falls back to XGBoost-only probabilities for that sample (no model retraining). Top 50,000 training sequences were ranked by log2 fold-change of template-weighted abundance in positive vs. negative training repertoires. Only the CVC embedder was used in the final winning pipeline (not TCRformer or other embedders).
 
 ---
 
